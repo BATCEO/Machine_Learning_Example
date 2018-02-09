@@ -2,15 +2,12 @@
 博士分享的一些机器学习算法的应用  自己又改善了一下  加了一些图和注释
 
 
-
-###————————————机器学习——————————————————
-###一元回归
-###示例数据：E:\RCode\MLT\MacroData.csv
-###示例代码
-
-setwd("E:/RCode/MLT/")
-setwd("E:\\RCode\\MLT\\")
-#设置路径，注意“\”和“/”、“\\”的区别
+### ————————————机器学习——————————————————  
+#### 一元回归 
+ ```r
+setwd("E:/RCode/MLT/")  
+setwd("E:\\RCode\\MLT\\")  
+#设置路径，注意“\”和“/”、“\\”的区别  
 #R语言中路径需使用“/”或“\\”，不使用“\”
 
 md=read.csv("MacroData.csv")
@@ -56,18 +53,22 @@ fit1
 #(intercept)项为截距，后边为自变量系数
 
 summary(fit1)
-#模型详细说明
-#Call项下为方程
-#Residuals项下为残差分布
-#Coefficients项下为系数
-#Signif.codes项下为显著程度，一般要求：    ----显著程度有什么用
-#“***”、“**”、“*”和“.”，即0.05以下  
-#Adjusted R-squared项下为调整R方，越接近“1”拟合越好。
-#F-statistic项下为F值，一般看其右侧的p-value，最好小于0.05
-#注意：Coefficients项下有一个Pr(>|t|)，是该变量的t检验的P值，
-#与p-value的值相同，在单变量回归中，二者等效。
-1.png
+```
+#### 模型详细说明  
+#### Call项下为方程  
+#### Residuals项下为残差分布  
+#### Coefficients项下为系数  
+#### Signif.codes项下为显著程度，一般要求：    ----显著程度有什么用  
+#### “***”、“**”、“*”和“.”，即0.05以下    
+#### Adjusted R-squared项下为调整R方，越接近“1”拟合越好。  
+#### F-statistic项下为F值，一般看其右侧的p-value，最好小于0.05  
+#### 注意：Coefficients项下有一个Pr(>|t|)，是该变量的t检验的P值，  
+#### 与p-value的值相同，在单变量回归中，二者等效。  
+<img src="img/1.png"></img>
 
+
+### 检查误差情况
+```r
 library(xxIRT)
 RMSE=rmse(smd$GDP,fit1$fitted.values)
 MSE=(rmse(smd$GDP,fit1$fitted.values))^2
@@ -75,7 +76,6 @@ MAE=sum(abs(smd$GDP-fit1$fitted.values))/nrow(smd)
 RMSE
 MSE
 MAE
-#检查误差情况
 
 abline(fit1)
 #在散点图中加入拟合直线
@@ -93,19 +93,19 @@ y=smd$GDP
 fit2=lm(y~x)
 aa=predict(fit2,data.frame(x=c(9000,10000)),level = 0.95,interval="prediction")
 aa
-#进行预测，并把预测值赋给“aa”
-#"level"置信度
-#"prediction"给出指定level下的因变量的点值的预测区间（常用）
-#"confidence"给出指定level下的因变量的均值置信区间（不常用），
-#此例并不适用均值预测，因为只预测了一个值，如果预测多个值，可以参考使用。
+```
+#### 进行预测，并把预测值赋给“aa”
+#### "level"置信度
+#### "prediction"给出指定level下的因变量的点值的预测区间（常用）
+#### "confidence"给出指定level下的因变量的均值置信区间（不常用），
+#### 此例并不适用均值预测，因为只预测了一个值，如果预测多个值，可以参考使用。
 
 
 
-###————————————机器学习——————————————————
-###多元回归
-###示例数据：E:\RCode\MLT\MacroData.csv
-###示例代码
+### ————————————机器学习——————————————————
+#### 多元回归
 
+```r
 setwd("E:/RCode/MLT/")
 md=read.csv("MacroData.csv",head=T)
 
@@ -120,13 +120,13 @@ plot(GDP,ZBL[,4],ylab="GDP",xlab=colnames(ZBL)[4])
 
 pairs(md[,2:13])
 #pairs(md[,2:13],upper.panel = NULL) 只显示下半部分
-2.png
-3.png
-corrplot(cor(md[,-1], use="complete.obs"),type="lower")
-7.png
-#一次性显示全部字段两两之间散点图。
-#md[,2:13]表示md表的第2列到第13列
+```
+<img src="img/3.png"></img>
 
+
+#### 一次性显示全部字段两两之间散点图。
+#### md[,2:13]表示md表的第2列到第13列
+```r
 cc=cor(GDP,ZBL)
 cc
 #测算GDP与ZBL中所有列的相关系数。
@@ -136,6 +136,10 @@ g
 #这种形式是测算一个表（ZBL）中所有字段两两之间的相关性。
 #ZBL[,1:ncol(ZBL)]表示ZBL表中从第1列到最后一列。
 
+corrplot(cor(md[,-1], use="complete.obs"),type="lower")
+```
+<img src="img/7.png"></img>
+```r
 f1=lm(GDP~.,ZBL)
 #其中，“GDP”代表因变量，其后的“~”表示关系，其后的“.”表示利用后边表的所有字段。
 #如果只是用ZBL中的某个字段，可以使用“GDP~ZBL[,1]+ZBL[,2]”的形式。
@@ -145,7 +149,10 @@ summary(f1)
 #根据结果可以看出，变量对应Pr(>|t|)的值，带有“*”和“.”的很少，
 #虽然Adjusted R-squared的值为0.98，也不能说这个模型就是一个好模型。
 #需要进一步处理。一般采用变量删减和共线性检验来处理变量。
-4.png
+```
+<img src="img/4.png"></img>
+
+```r
 library(car)
 vif(f1)
 #先看看共线性，多数指标的VIF值都超过10，有些还很大，说明共线性的情况比较严重。
@@ -157,7 +164,9 @@ f2=step(f1,direction="both")
 f2
 summary(f2)
 #双向逐步回归，变量的Pr值有所好转，还有进口、出口、净出口三个变量有问题。
-5.png
+```
+<img src="img/5.png"></img>
+```r
 vif(f2)
 #后五个指标的VIF值超标。
 
@@ -165,7 +174,9 @@ f3=step(f1,direction="forward")
 f3
 summary(f3)
 #此处并无明显变化，因为f1模型已经将所有变量纳入了，无法再增加变量。
-6.png
+```
+<img src="img/6.png"></img>
+```r
 f4=step(f1,direction="backward")
 #与f2模型得到的结果一致。
 f4
@@ -190,14 +201,16 @@ f7=lm(GDP~ZBL$用电量+ZBL$全社会固定资产投资+ZBL$社会消费品零�
 f7
 vif(f7)
 summary(f7)
-#虽然还有两个指标的VIF值大于10，但仅仅是略超，可以容忍。
-#检验：
-#t-P值（Pr值）都小于0.05，没问题；
-#F-P值< 2.2e-16，没问题；
-#Multiple R-squared:  0.9886和Adjusted R-squared:  0.9855非常大，OK；
-#AIC值较小（并非最小），最小的状态出现共线性，二者相比，共线性的危害比较大，
-#首先满足共线性的检验，再考虑AIC值。
+```
+#### 虽然还有两个指标的VIF值大于10，但仅仅是略超，可以容忍。
+#### 检验：
+#### t-P值（Pr值）都小于0.05，没问题；
+#### F-P值< 2.2e-16，没问题；
+#### Multiple R-squared:  0.9886和Adjusted R-squared:  0.9855非常大，OK；
+#### AIC值较小（并非最小），最小的状态出现共线性，二者相比，共线性的危害比较大，
+#### 首先满足共线性的检验，再考虑AIC值。
 
+```r
 library(xxIRT)
 RMSE=rmse(md$GDP,f7$fitted.values)
 MSE=(rmse(md$GDP,f7$fitted.values))^2
@@ -220,19 +233,19 @@ y=md$GDP
 f8=lm(y~.,data=x)
 bb=predict(f8,newx,level = 0.95,interval = "confidence")
 bb
-#进行预测，并把预测值赋给“bb”
-#"level" 给出置信度
-#"prediction"给出指定level下的因变量的点值的预测区间（常用）
-#"confidence"给出指定level下的因变量的均值置信区间（不常用）
-#此例并不适用均值预测，因为只预测了一个值，如果预测多个值，可以参考使用。
+```
+#### 进行预测，并把预测值赋给“bb”
+#### "level" 给出置信度
+#### "prediction"给出指定level下的因变量的点值的预测区间（常用）
+#### "confidence"给出指定level下的因变量的均值置信区间（不常用）
+#### 此例并不适用均值预测，因为只预测了一个值，如果预测多个值，可以参考使用。
 
 
 
-###————————————机器学习——————————————————
-###K-means
-###package: stats（自带）  命令：kmeans();
-###示例数据：iris
-###示例代码
+### ————————————机器学习——————————————————
+#### K-means
+#### package: stats（自带）  命令：kmeans();
+```r
 data(iris)
 data_aa=iris
 #读入数据后，最好将原始数据另存一个名字，
@@ -300,15 +313,14 @@ mean_all=cbind(SL_mean=mean_1,SW_mean=mean_2,
 
 mean_all
 #观察各字段分组均值结果
+```
 
 
+### ————————————机器学习——————————————————
+#### K近邻
+#### pakcage: class  命令：knn(); kknn  命令：kknn();
 
-###————————————机器学习——————————————————
-###K近邻
-###pakcage: class  命令：knn(); kknn  命令：kknn();
-###示例数据：iris
-###示例代码
-
+```r
 data(iris)
 data_aa=iris
 
@@ -388,15 +400,14 @@ fit.knn_best_1=fitted(knn.model_best_1)
 
 table(testset$Species,fit.knn_best_1)
 #给出测试集判别混淆矩阵
+```
 
 
+### ————————————机器学习——————————————————
+#### 层次聚类
+#### pakcage: stats(自带)  命令：hclust();
 
-###————————————机器学习——————————————————
-###层次聚类
-###pakcage: stats(自带)  命令：hclust();
-###示例数据：iris
-###示例代码
-
+```r
 data(iris)
 data_aa=iris
 
@@ -472,25 +483,27 @@ hc_mean_all=cbind(SL_mean=hc_mean_1,SW_mean=hc_mean_2,
 
 hc_mean_all
 #观察结果
-
+```
 ####扩展：
 #利用NbClust包的NBClust()命令，寻找最优分类数量。
 library(NbClust)
 hc_nc = NbClust(scale(data_aa[,1:4]),distance = "euclidean",
                 min.nc = 2,max.nc = 15,method = "complete")
-#参数：
-#距离方法为欧几里德，distance = "euclidean"
-#也可以使用其他距离方法，参照帮助文件。
-#最小分类为2，最大分类为15，在2-15类之间找出最优分类
-#method用法同上。
-##结果：
-#出4个图，并不是最重要。
-#最重要的是，给出的一堆说明的最下方
-#有个“*Conclusion*”项，其下方会说明最优分类是 ?
-#本例中给出的最优分类是“3”
 
-table(hc_nc$Best.nc[1,])
-#这个是将2-15个分类的推荐数量列出来，哪个数字的推荐数量越多，就是越好的分类。
-#本例中3分类对应17个推荐，视为最优。
+#参数：  
+#距离方法为欧几里德，distance = "euclidean"  
+#也可以使用其他距离方法，参照帮助文件。  
+#最小分类为2，最大分类为15，在2-15类之间找出最优分类  
+#method用法同上。  
+##结果：  
+#出4个图，并不是最重要。  
+#最重要的是，给出的一堆说明的最下方  
+#有个“*Conclusion*”项，其下方会说明最优分类是 ?  
+#本例中给出的最优分类是“3”  
+
+table(hc_nc$Best.nc[1,])  
+#这个是将2-15个分类的推荐数量列出来，哪个数字的推荐数量越多，就是越好的分类。  
+#本例中3分类对应17个推荐，视为最优  。
+
 
 
